@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#101114">
+  <title>ドパガギパニック</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="titleWrap">
+      <div class="mark">DP</div>
+      <div><h1>ドパガギパニック</h1></div>
+    </div>
+    <div class="timeBox"><span>生存</span><b id="survivalText">0:00</b><small>BEST <b id="bestText">0:00</b></small></div>
+  </header>
+
+  <section class="status" aria-label="ステータス">
+    <div class="meterBlock">
+      <div class="meterHead"><span>満腹度</span><b id="fullnessText">100</b></div>
+      <div class="meter"><i id="fullnessBar"></i></div>
+    </div>
+    <div class="meterBlock">
+      <div class="meterHead"><span>ドーパミン</span><b id="dopamineText">100</b></div>
+      <div class="meter"><i id="dopamineBar"></i></div>
+    </div>
+    <div class="chips">
+      <span id="musicChip">音楽 OFF</span>
+      <span id="energyChip">エナドリ OFF</span>
+    </div>
+  </section>
+
+  <main class="grid">
+    <section id="taskPanel" class="panel">
+      <div class="panelHead">
+        <div><small>TASK</small><h2>仕事</h2></div>
+        <span class="tag">3つ同時</span>
+      </div>
+
+      <div class="taskSummary">
+        <span>コンボ <b id="comboText">0</b></span>
+        <span>成功 <b id="taskSuccess">0</b></span>
+        <span>ミス <b id="taskMiss">0</b></span>
+        <span>MAX <b id="maxComboText">0</b></span>
+      </div>
+
+      <div class="taskSlots" id="taskSlots">
+        <div class="taskSlot" data-slot="0">
+          <div class="taskSlotHead"><span>JOB 1</span><b id="taskReward0">+15円</b></div>
+          <div id="taskPrompt0" class="taskPrompt">ゲーム開始で仕事が来る</div>
+          <div id="taskArea0" class="taskArea"></div>
+          <div id="taskCooldown0" class="taskCooldown hidden"><span>次の仕事まで</span><b id="taskCooldownText0">10.0秒</b><div class="cooldownTrack"><i id="taskCooldownFill0"></i></div></div>
+        </div>
+        <div class="taskSlot" data-slot="1">
+          <div class="taskSlotHead"><span>JOB 2</span><b id="taskReward1">+15円</b></div>
+          <div id="taskPrompt1" class="taskPrompt">ゲーム開始で仕事が来る</div>
+          <div id="taskArea1" class="taskArea"></div>
+          <div id="taskCooldown1" class="taskCooldown hidden"><span>次の仕事まで</span><b id="taskCooldownText1">10.0秒</b><div class="cooldownTrack"><i id="taskCooldownFill1"></i></div></div>
+        </div>
+        <div class="taskSlot" data-slot="2">
+          <div class="taskSlotHead"><span>JOB 3</span><b id="taskReward2">+15円</b></div>
+          <div id="taskPrompt2" class="taskPrompt">ゲーム開始で仕事が来る</div>
+          <div id="taskArea2" class="taskArea"></div>
+          <div id="taskCooldown2" class="taskCooldown hidden"><span>次の仕事まで</span><b id="taskCooldownText2">10.0秒</b><div class="cooldownTrack"><i id="taskCooldownFill2"></i></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="foodPanel" class="panel">
+      <div class="panelHead">
+        <div><small>FOOD & SHOP</small><h2>コンビニ＆パン調理</h2></div>
+        <span class="tag">買って回復</span>
+      </div>
+
+      <div class="shopBox">
+        <div class="walletRow">
+          <div class="wallet"><small>所持金</small><strong>¥<span id="moneyText">120</span></strong></div>
+          <div class="wallet breadWallet"><small>パン</small><strong>🍞 <span id="breadText">1</span></strong></div>
+        </div>
+
+        <div class="breadBuyTitle">🍞 パンを買う</div>
+        <div class="breadPackGrid">
+          <button class="buyBtn breadPack" data-item="bread" data-amount="1" data-cost="100"><span>1個</span><b>100円</b><small>100円/個</small></button>
+          <button class="buyBtn breadPack" data-item="bread" data-amount="3" data-cost="270"><span>3個</span><b>270円</b><small>90円/個</small></button>
+          <button class="buyBtn breadPack" data-item="bread" data-amount="5" data-cost="400"><span>5個</span><b>400円</b><small>80円/個</small></button>
+        </div>
+
+        <div class="shopGrid consumables">
+          <button id="musicBuyBtn" class="buyBtn timedBuy" data-item="music" data-cost="150">
+            <span class="buttonFill" id="musicButtonFill"></span>
+            <span class="buttonContent"><span>🎧 音楽</span><b id="musicBuyText">150円</b><small id="musicBuySub">35秒 ドパ減少半分</small></span>
+          </button>
+          <button id="energyBuyBtn" class="buyBtn timedBuy" data-item="energy" data-cost="220">
+            <span class="buttonFill" id="energyButtonFill"></span>
+            <span class="buttonContent"><span>⚡ エナドリ</span><b id="energyBuyText">220円</b><small id="energyBuySub">20秒 ドパ減少停止</small></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="foodActions">
+        <button id="eatBtn"><b>そのままパン</b><small>即時：満腹度 +20</small></button>
+        <button id="toastBtn" class="timedAction">
+          <span class="buttonFill toastFill" id="toastButtonFill"></span>
+          <span class="buttonContent"><b id="toastButtonText">トースト</b><small id="toastButtonSub">12秒で焼き上がる。完成後に押して食べる</small></span>
+        </button>
+        <button id="fryBtn"><b>揚げパン</b><small>自分で取り出す：成功で満腹度 +48 / ドパ +14</small></button>
+      </div>
+
+      <div class="dualCookGrid fryOnly">
+        <div class="cookBox fryCookBox">
+          <div class="cookTop"><span>揚げパン</span><b id="fryCookText">待機中</b></div>
+          <div class="cookTrack">
+            <span id="sweetSpot" class="sweet"></span>
+            <i id="fryCookFill"></i>
+          </div>
+          <button id="takeBtn" class="primary wide" disabled>揚げパンを取り出す <kbd>Enter</kbd></button>
+        </div>
+      </div>
+      <div class="eggDock" aria-label="ソシャゲたまご">
+        <div class="eggHead">
+          <span>SOCIAL GACHA</span>
+          <b id="eggStockText">たまご 3/3</b>
+        </div>
+        <div class="eggRecharge">
+          <span id="eggTimerText">満タン</span>
+          <div class="eggTimerTrack"><i id="eggTimerFill"></i></div>
+        </div>
+        <div class="eggGrid">
+          <button class="eggSlot" id="eggSlot0" data-egg-slot="0"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity0">N</span><b id="eggTap0">2回</b><small id="eggReward0">ドパ +7</small><i class="eggCrack" id="eggCrack0"></i></button>
+          <button class="eggSlot" id="eggSlot1" data-egg-slot="1"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity1">R</span><b id="eggTap1">4回</b><small id="eggReward1">ドパ +13</small><i class="eggCrack" id="eggCrack1"></i></button>
+          <button class="eggSlot" id="eggSlot2" data-egg-slot="2"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity2">SR</span><b id="eggTap2">7回</b><small id="eggReward2">ドパ +24</small><i class="eggCrack" id="eggCrack2"></i></button>
+        </div>
+      </div>
+
+      <div id="musicPrompt" class="musicPrompt hidden">
+        <b>曲が終わった！</b><span>次の曲を流すにはもう一度「音楽」を購入。</span>
+      </div>
+    </section>
+
+    <section id="shortPanel" class="panel">
+      <div class="panelHead">
+        <div><small>SHORTS</small><h2>ショート沼</h2></div>
+        <span class="tag">見てる間だけ回復</span>
+      </div>
+      <div id="phone" class="phone" tabindex="0">
+        <div id="shortView" class="shortView">
+          <div class="videoProgress"><i id="videoProgress"></i></div>
+          <div class="shortCreator"><span class="creatorAvatar">DP</span><div><b>@dopafeed</b><small>FOR YOU</small></div></div>
+          <div id="adCount" class="adCount">広告まであと 4本</div>
+          <div id="shortStreak" class="shortStreak">沼 ×0</div>
+          <div class="shortArtStage"><span class="orb orbA"></span><span class="orb orbB"></span><div class="shortArt" id="shortArt">🐕</div></div>
+          <div class="shortBottom">
+            <div><b id="shortTitle">犬、急にテンションMAX</b><span id="shortTag">#おすすめ #暇つぶし</span></div>
+            <div class="shortSide">
+              <button id="likeBtn" class="round">♡<small>いいね</small></button>
+              <span class="commentStat">💬<small id="commentCount">284</small></span>
+            </div>
+          </div>
+          <button id="watchBtn" class="watchBtn">長押しで視聴</button>
+          <button id="swipeBtn" class="swipe" disabled>↑ 次へ <kbd>↑</kbd></button>
+        </div>
+        <div id="ad" class="ad hidden">
+          <div class="adInner">
+            <button id="adClose" class="adClose" disabled>×</button>
+            <strong>広告</strong>
+            <div class="adBig">今なら<br>なんかお得！</div>
+            <span id="adWait">×まで 10.0秒</span>
+            <div class="adTimer"><i id="adTimerFill"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobileNav" aria-label="画面移動">
+    <button data-target="taskPanel">タスク</button>
+    <button data-target="foodPanel">ショップ</button>
+    <button data-target="shortPanel">ショート</button>
+  </nav>
+
+
+  <div id="startOverlay" class="overlay">
+    <div class="modal startModal">
+      <div class="modalMark">DP</div>
+      <h2>ドパガギパニック</h2>
+      <div class="startLead">満腹度とドーパミンを切らさず、できるだけ長く生き残れ！</div>
+      <div class="startActions">
+        <button id="startBtn" class="primary">ゲーム開始</button>
+        <button id="rulesBtn" class="ghost">ルール説明</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rulesOverlay" class="overlay rulesOverlay hidden">
+    <div class="modal rulesModal">
+      <div class="rulesTop">
+        <span id="rulesPageCount" class="rulesCount">1 / 4</span>
+        <button id="rulesCloseBtn" class="rulesClose" aria-label="ルール説明を閉じる">×</button>
+      </div>
+
+      <section class="rulePage active" data-page="0">
+        <small>01 / WORK</small>
+        <h2>お金を稼ぐ</h2>
+        <p>3つのタスクが同時に出現。正しく、素早くこなすほど報酬アップ。タスク終了後は10秒で次が補充される。</p>
+        <span class="ruleSub">補充待ちの秒数をクリックすると、1回につき1秒短縮できる。</span>
+      </section>
+
+      <section class="rulePage" data-page="1">
+        <small>02 / FOOD</small>
+        <h2>満腹度回復</h2>
+        <p>パンはそのまま食べると即時回復。トーストは自動で焼き上がり、完成後にボタンを押して食べる。揚げパンはベストタイミングで取り出すと大きく回復する。</p>
+        <span class="ruleSub">パン・音楽・エナドリはショップで購入。音楽はドーパミン減少を軽減、エナドリは一定時間ドーパミン減少を止める。</span>
+      </section>
+
+      <section class="rulePage" data-page="2">
+        <small>03 / SHORTS</small>
+        <h2>ドーパミン回復</h2>
+        <p>ショートは長押ししている間だけ再生され、ドーパミンが回復する。見終わったらスワイプして次の動画へ。</p>
+        <span class="ruleSub">数本見ると広告が出現。広告は10秒経つと×が表示される。</span>
+      </section>
+
+      <section class="rulePage" data-page="3">
+        <small>04 / GACHA</small>
+        <h2>たまご</h2>
+        <p>たまごは時間経過で自動補充。クリックして割ると、レア度に応じてドーパミンが回復する。</p>
+        <span class="ruleSub">高レアほど回復量が多いかわりに、割るまでに必要なクリック数も増える。</span>
+      </section>
+
+      <div class="ruleDots" aria-hidden="true"><i class="active"></i><i></i><i></i><i></i></div>
+      <div class="ruleNav">
+        <button id="rulesPrevBtn" class="ghost" disabled>← 前へ</button>
+        <button id="rulesNextBtn" class="primary">次へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameOver" class="overlay hidden">
+    <div class="modal">
+      <div class="modalMark">END</div>
+      <h2 id="gameOverTitle">虚無。</h2>
+      <p id="gameOverReason">ドーパミンが切れた。</p>
+      <div class="result">生存 <b id="resultText">0:00</b></div>
+      <button id="restartBtn" class="primary wide">もう一回</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
