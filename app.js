@@ -12,10 +12,10 @@
   };
 
   const els={
-    full:$('fullnessText'),fullBar:$('fullnessBar'),dopa:$('dopamineText'),dopaBar:$('dopamineBar'),money:$('moneyText'),bread:$('breadText'),musicChip:$('musicChip'),energyChip:$('energyChip'),survival:$('survivalText'),best:$('bestText'),
+    full:$('fullnessText'),fullBar:$('fullnessBar'),dopa:$('dopamineText'),dopaBar:$('dopamineBar'),money:$('moneyText'),bread:$('breadText'),mochiChip:$('mochiChip'),energyChip:$('energyChip'),survival:$('survivalText'),best:$('bestText'),
     taskSuccess:$('taskSuccess'),taskMiss:$('taskMiss'),combo:$('comboText'),maxCombo:$('maxComboText'),
-    eat:$('eatBtn'),toast:$('toastBtn'),fry:$('fryBtn'),toastButtonFill:$('toastButtonFill'),toastButtonText:$('toastButtonText'),toastButtonSub:$('toastButtonSub'),fryCookText:$('fryCookText'),fryCookFill:$('fryCookFill'),sweet:$('sweetSpot'),take:$('takeBtn'),musicPrompt:$('musicPrompt'),
-    energyBuy:$('energyBuyBtn'),musicBuy:$('musicBuyBtn'),energyButtonFill:$('energyButtonFill'),musicButtonFill:$('musicButtonFill'),energyBuyText:$('energyBuyText'),musicBuyText:$('musicBuyText'),energyBuySub:$('energyBuySub'),musicBuySub:$('musicBuySub'),
+    eat:$('eatBtn'),toast:$('toastBtn'),fry:$('fryBtn'),toastButtonFill:$('toastButtonFill'),toastButtonText:$('toastButtonText'),toastButtonSub:$('toastButtonSub'),fryCookText:$('fryCookText'),fryCookFill:$('fryCookFill'),sweet:$('sweetSpot'),take:$('takeBtn'),
+    energyBuy:$('energyBuyBtn'),mochiBuy:$('mochiBuyBtn'),energyButtonFill:$('energyButtonFill'),mochiButtonFill:$('mochiButtonFill'),energyBuyText:$('energyBuyText'),mochiBuyText:$('mochiBuyText'),energyBuySub:$('energyBuySub'),mochiBuySub:$('mochiBuySub'),
     shortArt:$('shortArt'),shortTitle:$('shortTitle'),shortTag:$('shortTag'),progress:$('videoProgress'),adCount:$('adCount'),shortStreak:$('shortStreak'),commentCount:$('commentCount'),like:$('likeBtn'),watch:$('watchBtn'),swipe:$('swipeBtn'),ad:$('ad'),adClose:$('adClose'),adWait:$('adWait'),adTimerFill:$('adTimerFill'),phone:$('phone'),
     eggStock:$('eggStockText'),eggTimerText:$('eggTimerText'),eggTimerFill:$('eggTimerFill'),
     start:$('startOverlay'),gameOver:$('gameOver'),overTitle:$('gameOverTitle'),overReason:$('gameOverReason'),result:$('resultText')
@@ -30,12 +30,12 @@
 
   const state={
     running:false,startedAt:0,lastTick:0,best:Number(safeStorage.get('dopagagiBestV4','0')||0),
-    fullness:100,dopamine:100,money:120,bread:1,energyUntil:0,musicUntil:0,
+    fullness:100,dopamine:100,money:120,bread:1,energyUntil:0,mochiUntil:0,
     task:{success:0,miss:0,combo:0,maxCombo:0,slots:Array.from({length:3},()=>({type:null,reward:15,answer:null,step:1,started:0,cooldownUntil:0,cooldownDuration:10}))},
     toast:{active:false,ready:false,start:0,duration:12},
-    fry:{active:false,start:0,duration:10.5,sweetA:.735,sweetB:.795},
+    fry:{active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792},
     short:{progress:0,duration:3.8,watching:false,liked:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)},
-    eggs:{slots:[null,null,null],capacity:3,recharge:14,nextAt:0}
+    eggs:{slots:[null,null,null],capacity:3,recharge:16,nextAt:0}
   };
 
   const shorts=[
@@ -46,8 +46,8 @@
   function addFull(v){state.fullness=clamp(state.fullness+v,0,100)}
   function addDopa(v){state.dopamine=clamp(state.dopamine+v,0,100)}
   function percent(left,total){return clamp(left/total,0,1)*100}
-  function shortWatchRate(){return 3.4*(1+Math.min(state.short.streak,4)*0.08)}
-  function shortFinishBonus(){return Math.round(4+Math.min(state.short.streak,4))}
+  function shortWatchRate(){return 3.0*(1+Math.min(state.short.streak,4)*0.07)}
+  function shortFinishBonus(){return Math.round(3+Math.min(state.short.streak,4)*0.8)}
 
   function render(){
     const t=now();
@@ -70,23 +70,23 @@
       }
     });
 
-    const eLeft=Math.max(0,state.energyUntil-t),mLeft=Math.max(0,state.musicUntil-t);
+    const eLeft=Math.max(0,state.energyUntil-t),mLeft=Math.max(0,state.mochiUntil-t);
     els.energyChip.textContent=eLeft>0?`エナドリ ${Math.ceil(eLeft)}秒`:'エナドリ OFF';
-    els.musicChip.textContent=mLeft>0?`音楽 ${Math.ceil(mLeft)}秒`:'音楽 OFF';
+    els.mochiChip.textContent=mLeft>0?`もち ${Math.ceil(mLeft)}秒`:'もち OFF';
 
     buyButtons.forEach(b=>{
       const cost=Number(b.dataset.cost),item=b.dataset.item;
-      const activeTimed=(item==='energy'&&eLeft>0)||(item==='music'&&mLeft>0);
+      const activeTimed=(item==='energy'&&eLeft>0)||(item==='mochi'&&mLeft>0);
       const ok=state.running&&state.money>=cost&&!activeTimed;
       b.classList.toggle('affordable',ok);b.classList.toggle('activeTimed',activeTimed);b.disabled=!state.running||!ok;
     });
 
     els.energyButtonFill.style.width=`${percent(eLeft,20)}%`;
-    els.musicButtonFill.style.width=`${percent(mLeft,35)}%`;
+    els.mochiButtonFill.style.width=`${percent(mLeft,35)}%`;
     els.energyBuyText.textContent=eLeft>0?`${eLeft.toFixed(1)}秒`:'220円';
-    els.musicBuyText.textContent=mLeft>0?`${mLeft.toFixed(1)}秒`:'150円';
-    els.energyBuySub.textContent=eLeft>0?'ドーパミン減少停止中':'20秒 ドパ減少停止';
-    els.musicBuySub.textContent=mLeft>0?'ドーパミン減少半分':'35秒 ドパ減少半分';
+    els.mochiBuyText.textContent=mLeft>0?`${mLeft.toFixed(1)}秒`:'150円';
+    els.energyBuySub.textContent=eLeft>0?'ドーパミン減少半分':'20秒 ドーパミン減少半分';
+    els.mochiBuySub.textContent=mLeft>0?'満腹度減少半分':'35秒 満腹度減少半分';
 
 
     els.eat.disabled=!state.running||state.bread<1;
@@ -106,7 +106,7 @@
     }else if(state.toast.ready){
       els.toastButtonFill.style.width='100%';
       els.toastButtonText.textContent='焼き上がり！ 食べる';
-      els.toastButtonSub.textContent='押すと満腹度 +38 / ドパ +6';
+      els.toastButtonSub.textContent='押すと満腹度 +34 / ドパ +4';
     }else{
       els.toastButtonFill.style.width='0%';els.toastButtonText.textContent='トースト';els.toastButtonSub.textContent='12秒で焼き上がる。完成後に押して食べる';
     }
@@ -181,7 +181,7 @@
     const slot=state.task.slots[slotIndex];
     if(!state.running||!slot.type)return;
     const elapsed=now()-slot.started;
-    const speedBonus=elapsed<=2?5:elapsed<=3.5?2:0;
+    const speedBonus=elapsed<=1.8?4:elapsed<=3.1?2:0;
     state.task.combo++;
     state.task.maxCombo=Math.max(state.task.maxCombo,state.task.combo);
     const comboBonus=Math.min(8,Math.max(0,state.task.combo-1)*2);
@@ -194,7 +194,7 @@
   function taskWrong(slotIndex){
     const slot=state.task.slots[slotIndex];
     if(!state.running||!slot.type)return;
-    state.task.miss++;state.task.combo=0;els.taskMiss.textContent=state.task.miss;state.dopamine=Math.max(0,state.dopamine-3);
+    state.task.miss++;state.task.combo=0;els.taskMiss.textContent=state.task.miss;state.dopamine=Math.max(0,state.dopamine-4);
     toastMsg('ミス！ コンボ0 / ドパ-2');beginCooldown(slotIndex);
   }
   function makeBigger(i){
@@ -296,23 +296,23 @@
     if(!state.running||state.money<cost)return;
     const t=now();
     if(item==='energy'&&t<state.energyUntil)return;
-    if(item==='music'&&t<state.musicUntil)return;
+    if(item==='mochi'&&t<state.mochiUntil)return;
     state.money-=cost;
     if(item==='bread'){state.bread+=amount;toastMsg(`パン +${amount}`)}
-    if(item==='energy'){state.energyUntil=t+20;toastMsg('エナドリ：20秒ドパ減少停止')}
-    if(item==='music'){state.musicUntil=t+35;els.musicPrompt.classList.add('hidden');toastMsg('音楽スタート：35秒')}
+    if(item==='energy'){state.energyUntil=t+20;toastMsg('エナドリ：20秒ドーパミン減少半分')}
+    if(item==='mochi'){state.mochiUntil=t+35;toastMsg('もち：35秒満腹度減少半分')}
     render();
   }
-  function eat(){if(!state.running||state.bread<1)return;state.bread--;addFull(20);toastMsg('そのままパン：満腹 +20');render()}
+  function eat(){if(!state.running||state.bread<1)return;state.bread--;addFull(18);toastMsg('そのままパン：満腹 +18');render()}
   function startToast(){if(!state.running||state.bread<1||state.toast.active||state.toast.ready)return;state.bread--;state.toast={active:true,ready:false,start:now(),duration:12};toastMsg('トースト開始。揚げパンも同時に作れる');render()}
   function finishToast(){if(!state.toast.active)return;state.toast={active:false,ready:true,start:0,duration:12};toastMsg('トースト焼き上がり！ ボタンを押して食べよう');render()}
-  function eatToast(){if(!state.running||!state.toast.ready)return;addFull(38);addDopa(6);state.toast={active:false,ready:false,start:0,duration:12};toastMsg('トーストを食べた！ 満腹+38 / ドパ+6');render()}
+  function eatToast(){if(!state.running||!state.toast.ready)return;addFull(34);addDopa(4);state.toast={active:false,ready:false,start:0,duration:12};toastMsg('トーストを食べた！ 満腹+34 / ドパ+4');render()}
   function handleToast(){if(state.toast.ready)eatToast();else startToast()}
-  function startFry(){if(!state.running||state.bread<1||state.fry.active)return;state.bread--;state.fry={active:true,start:now(),duration:10.5,sweetA:.735,sweetB:.795};els.sweet.style.left='73.5%';els.sweet.style.width='6%';toastMsg('揚げパン開始。ベストタイミングを見逃すな');render()}
+  function startFry(){if(!state.running||state.bread<1||state.fry.active)return;state.bread--;state.fry={active:true,start:now(),duration:10.5,sweetA:.742,sweetB:.792};els.sweet.style.left='74.2%';els.sweet.style.width='5%';toastMsg('揚げパン開始。ベストタイミングを見逃すな');render()}
   function takeFry(){
     if(!state.running||!state.fry.active)return;const p=(now()-state.fry.start)/state.fry.duration;let f,d,msg;
-    if(p>=state.fry.sweetA&&p<=state.fry.sweetB){f=48;d=14;msg='完璧な揚げパン！！'}else if(p<state.fry.sweetA){f=14;d=1;msg='まだベチャベチャ'}else if(p<=.93){f=20;d=3;msg='ちょっと揚げすぎ'}else if(p<=1.08){f=8;d=0;msg='かなり焦げた'}else{f=4;d=0;msg='真っ黒……'}
-    addFull(f);addDopa(d);state.fry={active:false,start:0,duration:10.5,sweetA:.735,sweetB:.795};toastMsg(`${msg} 満腹+${f} / ドパ+${d}`);render()
+    if(p>=state.fry.sweetA&&p<=state.fry.sweetB){f=42;d=11;msg='完璧な揚げパン！！'}else if(p<state.fry.sweetA){f=14;d=1;msg='まだベチャベチャ'}else if(p<=.93){f=20;d=3;msg='ちょっと揚げすぎ'}else if(p<=1.08){f=8;d=0;msg='かなり焦げた'}else{f=4;d=0;msg='真っ黒……'}
+    addFull(f);addDopa(d);state.fry={active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792};toastMsg(`${msg} 満腹+${f} / ドパ+${d}`);render()
   }
 
   function nextShortVisual(){
@@ -324,7 +324,7 @@
   function swipe(){
     if(!state.running||state.short.ad||!state.short.ended)return;
     const quick=state.short.endedAt>0&&(now()-state.short.endedAt)<=1.6;
-    if(quick){addDopa(2);}else state.short.streak=0;
+    if(quick){addDopa(1);}else state.short.streak=0;
     state.short.count++;
     state.short.untilAd=Math.max(0,state.short.untilAd-1);
     if(state.short.untilAd===0){
@@ -350,21 +350,21 @@
   function prevRules(){if(rulesPage<=0)return;rulesPage--;renderRules()}
 
   function startGame(){
-    state.running=true;state.startedAt=now();state.lastTick=now();state.fullness=100;state.dopamine=100;state.money=120;state.bread=1;state.energyUntil=0;state.musicUntil=0;
+    state.running=true;state.startedAt=now();state.lastTick=now();state.fullness=100;state.dopamine=100;state.money=120;state.bread=1;state.energyUntil=0;state.mochiUntil=0;
     state.task={success:0,miss:0,combo:0,maxCombo:0,slots:Array.from({length:3},freshSlot)};
-    state.toast={active:false,ready:false,start:0,duration:12};state.fry={active:false,start:0,duration:10.5,sweetA:.735,sweetB:.795};
+    state.toast={active:false,ready:false,start:0,duration:12};state.fry={active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792};
     state.short={progress:0,duration:3.8,watching:false,liked:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)};
-    state.eggs={slots:[makeEgg(),makeEgg(),makeEgg()],capacity:3,recharge:14,nextAt:0};
-    els.taskSuccess.textContent='0';els.taskMiss.textContent='0';els.start.classList.add('hidden');$('rulesOverlay').classList.add('hidden');els.gameOver.classList.add('hidden');els.ad.classList.add('hidden');els.musicPrompt.classList.add('hidden');[0,1,2].forEach(newTask);nextShortVisual();render();
+    state.eggs={slots:[makeEgg(),makeEgg(),makeEgg()],capacity:3,recharge:16,nextAt:0};
+    els.taskSuccess.textContent='0';els.taskMiss.textContent='0';els.start.classList.add('hidden');$('rulesOverlay').classList.add('hidden');els.gameOver.classList.add('hidden');els.ad.classList.add('hidden');[0,1,2].forEach(newTask);nextShortVisual();render();
   }
   function resetRoundState(){
-    state.startedAt=0;state.lastTick=0;state.fullness=100;state.dopamine=100;state.money=120;state.bread=1;state.energyUntil=0;state.musicUntil=0;
+    state.startedAt=0;state.lastTick=0;state.fullness=100;state.dopamine=100;state.money=120;state.bread=1;state.energyUntil=0;state.mochiUntil=0;
     state.task={success:0,miss:0,combo:0,maxCombo:0,slots:Array.from({length:3},freshSlot)};
-    state.toast={active:false,ready:false,start:0,duration:12};state.fry={active:false,start:0,duration:10.5,sweetA:.735,sweetB:.795};
+    state.toast={active:false,ready:false,start:0,duration:12};state.fry={active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792};
     state.short={progress:0,duration:3.8,watching:false,liked:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)};
-    state.eggs={slots:[makeEgg(),makeEgg(),makeEgg()],capacity:3,recharge:14,nextAt:0};
+    state.eggs={slots:[makeEgg(),makeEgg(),makeEgg()],capacity:3,recharge:16,nextAt:0};
     els.taskSuccess.textContent='0';els.taskMiss.textContent='0';taskEls.forEach((el,i)=>{el.reward.textContent='+15円';el.prompt.textContent='ゲーム開始で仕事が来る';el.area.innerHTML='';el.cooldown.classList.add('hidden');el.cooldownFill.style.width='0%';});
-    els.ad.classList.add('hidden');els.musicPrompt.classList.add('hidden');
+    els.ad.classList.add('hidden');
   }
   function endGame(reason){
     if(!state.running)return;
@@ -379,12 +379,12 @@
 
   function tick(){
     if(!state.running)return;const t=now(),dt=Math.min(.45,t-state.lastTick);state.lastTick=t;
-    const fullnessDrain=1.45;state.fullness-=fullnessDrain*dt;const dopaDrain=t<state.energyUntil?0:(t<state.musicUntil?1.2:2.35);state.dopamine-=dopaDrain*dt;
+    const fullnessDrain=1.58*(t<state.mochiUntil?0.5:1);state.fullness-=fullnessDrain*dt;const dopaDrain=2.55*(t<state.energyUntil?0.5:1);state.dopamine-=dopaDrain*dt;
     if(state.short.watching&&!state.short.ad&&!state.short.ended){
       state.short.progress+=dt;addDopa(shortWatchRate()*dt);
       if(state.short.progress>=state.short.duration){
         state.short.progress=state.short.duration;state.short.ended=true;state.short.watching=false;
-        const finish=shortFinishBonus(),likeBonus=state.short.liked?3:0;addDopa(finish+likeBonus);state.short.streak=Math.min(9,state.short.streak+1);state.short.endedAt=t;
+        const finish=shortFinishBonus(),likeBonus=state.short.liked?2:0;addDopa(finish+likeBonus);state.short.streak=Math.min(9,state.short.streak+1);state.short.endedAt=t;
         toastMsg(`完走 +${finish}${likeBonus?` / ♥ +${likeBonus}`:''}`);
       }
     }
@@ -392,8 +392,8 @@
     if(state.short.ad&&state.short.adProgress<state.short.adDuration){state.short.adProgress=Math.min(state.short.adDuration,state.short.adProgress+dt);if(state.short.adProgress>=state.short.adDuration)toastMsg('×が出た！')}
     state.task.slots.forEach((slot,i)=>{if(slot.cooldownUntil>0&&t>=slot.cooldownUntil)newTask(i)});
     if(state.toast.active&&t-state.toast.start>=state.toast.duration)finishToast();
-    if(state.fry.active&&t-state.fry.start>=state.fry.duration*1.10){state.fry={active:false,start:0,duration:10.5,sweetA:.735,sweetB:.795};toastMsg('揚げパンが炭になった……')}
-    if(state.musicUntil>0&&t>=state.musicUntil){state.musicUntil=0;els.musicPrompt.classList.remove('hidden');toastMsg('音楽が止まった')}
+    if(state.fry.active&&t-state.fry.start>=state.fry.duration*1.10){state.fry={active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792};toastMsg('揚げパンが炭になった……')}
+    if(state.mochiUntil>0&&t>=state.mochiUntil){state.mochiUntil=0}
     updateEggRecharge(t);
     state.fullness=clamp(state.fullness,0,100);state.dopamine=clamp(state.dopamine,0,100);if(state.fullness<=0)return endGame('full');if(state.dopamine<=0)return endGame('dopa');render()
   }
