@@ -27,7 +27,7 @@
       <div class="meter"><i id="dopamineBar"></i></div>
     </div>
     <div class="chips">
-      <span id="musicChip">音楽 OFF</span>
+      <span id="mochiChip">もち OFF</span>
       <span id="energyChip">エナドリ OFF</span>
     </div>
   </section>
@@ -88,24 +88,24 @@
         </div>
 
         <div class="shopGrid consumables">
-          <button id="musicBuyBtn" class="buyBtn timedBuy" data-item="music" data-cost="150">
-            <span class="buttonFill" id="musicButtonFill"></span>
-            <span class="buttonContent"><span>🎧 音楽</span><b id="musicBuyText">150円</b><small id="musicBuySub">35秒 ドパ減少半分</small></span>
+          <button id="mochiBuyBtn" class="buyBtn timedBuy" data-item="mochi" data-cost="150">
+            <span class="buttonFill" id="mochiButtonFill"></span>
+            <span class="buttonContent"><span>🍡 もち</span><b id="mochiBuyText">150円</b><small id="mochiBuySub">35秒 満腹度減少半分</small></span>
           </button>
           <button id="energyBuyBtn" class="buyBtn timedBuy" data-item="energy" data-cost="220">
             <span class="buttonFill" id="energyButtonFill"></span>
-            <span class="buttonContent"><span>⚡ エナドリ</span><b id="energyBuyText">220円</b><small id="energyBuySub">20秒 ドパ減少停止</small></span>
+            <span class="buttonContent"><span>⚡ エナドリ</span><b id="energyBuyText">220円</b><small id="energyBuySub">20秒 ドーパミン減少半分</small></span>
           </button>
         </div>
       </div>
 
       <div class="foodActions">
-        <button id="eatBtn"><b>そのままパン</b><small>即時：満腹度 +20</small></button>
+        <button id="eatBtn"><b>そのままパン</b><small>即時：満腹度 +18</small></button>
         <button id="toastBtn" class="timedAction">
           <span class="buttonFill toastFill" id="toastButtonFill"></span>
           <span class="buttonContent"><b id="toastButtonText">トースト</b><small id="toastButtonSub">12秒で焼き上がる。完成後に押して食べる</small></span>
         </button>
-        <button id="fryBtn"><b>揚げパン</b><small>自分で取り出す：成功で満腹度 +48 / ドパ +14</small></button>
+        <button id="fryBtn"><b>揚げパン</b><small>自分で取り出す：成功で満腹度 +42 / ドパ +11</small></button>
       </div>
 
       <div class="dualCookGrid fryOnly">
@@ -134,9 +134,6 @@
         </div>
       </div>
 
-      <div id="musicPrompt" class="musicPrompt hidden">
-        <b>曲が終わった！</b><span>次の曲を流すにはもう一度「音楽」を購入。</span>
-      </div>
     </section>
 
     <section id="shortPanel" class="panel">
@@ -211,7 +208,7 @@
         <small>02 / FOOD</small>
         <h2>満腹度回復</h2>
         <p>パンはそのまま食べると即時回復。トーストは自動で焼き上がり、完成後にボタンを押して食べる。揚げパンはベストタイミングで取り出すと大きく回復する。</p>
-        <span class="ruleSub">パン・音楽・エナドリはショップで購入。音楽はドーパミン減少を軽減、エナドリは一定時間ドーパミン減少を止める。</span>
+        <span class="ruleSub">パン・もち・エナドリはショップで購入。もちは一定時間満腹度の減少を半分に、エナドリはドーパミンの減少を半分にする。</span>
       </section>
 
       <section class="rulePage" data-page="2">
