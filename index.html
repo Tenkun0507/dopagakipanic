@@ -99,38 +99,41 @@
         </div>
       </div>
 
-      <div class="foodActions">
-        <button id="eatBtn"><b>そのままパン</b><small>即時：満腹度 +18</small></button>
-        <button id="toastBtn" class="timedAction">
-          <span class="buttonFill toastFill" id="toastButtonFill"></span>
-          <span class="buttonContent"><b id="toastButtonText">トースト</b><small id="toastButtonSub">12秒で焼き上がる。完成後に押して食べる</small></span>
-        </button>
-        <button id="fryBtn"><b>揚げパン</b><small>自分で取り出す：成功で満腹度 +42 / ドパ +11</small></button>
-      </div>
+      <div class="foodRight">
+        <div class="foodActions">
+          <button id="eatBtn"><b>そのままパン</b><small>即時：満腹度 +18</small></button>
+          <button id="toastBtn" class="timedAction">
+            <span class="buttonFill toastFill" id="toastButtonFill"></span>
+            <span class="buttonContent"><b id="toastButtonText">トースト</b><small id="toastButtonSub">12秒で焼き上がる。完成後に押して食べる</small></span>
+          </button>
+          <button id="fryBtn"><b>揚げパン</b><small>タイミングを見て取り出す</small></button>
+        </div>
 
-      <div class="dualCookGrid fryOnly">
-        <div class="cookBox fryCookBox">
-          <div class="cookTop"><span>揚げパン</span><b id="fryCookText">待機中</b></div>
-          <div class="cookTrack">
-            <span id="sweetSpot" class="sweet"></span>
-            <i id="fryCookFill"></i>
+        <div class="eggDock" aria-label="ソシャゲたまご">
+          <div class="eggHead">
+            <span>SOCIAL GACHA</span>
+            <b id="eggStockText">たまご 3/3</b>
           </div>
-          <button id="takeBtn" class="primary wide" disabled>揚げパンを取り出す <kbd>Enter</kbd></button>
+          <div class="eggRecharge">
+            <span id="eggTimerText">満タン</span>
+            <div class="eggTimerTrack"><i id="eggTimerFill"></i></div>
+          </div>
+          <div class="eggGrid">
+            <button class="eggSlot" id="eggSlot0" data-egg-slot="0"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity0">N</span><b id="eggTap0">2回</b><small id="eggReward0">ドパ +7</small><i class="eggCrack" id="eggCrack0"></i></button>
+            <button class="eggSlot" id="eggSlot1" data-egg-slot="1"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity1">R</span><b id="eggTap1">4回</b><small id="eggReward1">ドパ +13</small><i class="eggCrack" id="eggCrack1"></i></button>
+            <button class="eggSlot" id="eggSlot2" data-egg-slot="2"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity2">SR</span><b id="eggTap2">7回</b><small id="eggReward2">ドパ +24</small><i class="eggCrack" id="eggCrack2"></i></button>
+          </div>
         </div>
-      </div>
-      <div class="eggDock" aria-label="ソシャゲたまご">
-        <div class="eggHead">
-          <span>SOCIAL GACHA</span>
-          <b id="eggStockText">たまご 3/3</b>
-        </div>
-        <div class="eggRecharge">
-          <span id="eggTimerText">満タン</span>
-          <div class="eggTimerTrack"><i id="eggTimerFill"></i></div>
-        </div>
-        <div class="eggGrid">
-          <button class="eggSlot" id="eggSlot0" data-egg-slot="0"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity0">N</span><b id="eggTap0">2回</b><small id="eggReward0">ドパ +7</small><i class="eggCrack" id="eggCrack0"></i></button>
-          <button class="eggSlot" id="eggSlot1" data-egg-slot="1"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity1">R</span><b id="eggTap1">4回</b><small id="eggReward1">ドパ +13</small><i class="eggCrack" id="eggCrack1"></i></button>
-          <button class="eggSlot" id="eggSlot2" data-egg-slot="2"><span class="eggShell">🥚</span><span class="eggRarity" id="eggRarity2">SR</span><b id="eggTap2">7回</b><small id="eggReward2">ドパ +24</small><i class="eggCrack" id="eggCrack2"></i></button>
+
+        <div class="dualCookGrid fryOnly">
+          <div class="cookBox fryCookBox">
+            <div class="cookTop"><span>揚げパン</span><b id="fryCookText">待機中</b></div>
+            <div class="cookTrack">
+              <span id="sweetSpot" class="sweet"></span>
+              <i id="fryCookFill"></i>
+            </div>
+            <button id="takeBtn" class="primary wide" disabled>揚げパンを取り出す <kbd>Enter</kbd></button>
+          </div>
         </div>
       </div>
 
@@ -214,7 +217,7 @@
       <section class="rulePage" data-page="2">
         <small>03 / SHORTS</small>
         <h2>ドーパミン回復</h2>
-        <p>ショートは長押ししている間だけ再生され、ドーパミンが回復する。見終わったらスワイプして次の動画へ。</p>
+        <p>ショートは長押ししている間だけ再生され、ドーパミンが回復する。見終わった後でも「いいね」でき、スワイプすると次の動画へ進む。</p>
         <span class="ruleSub">数本見ると広告が出現。広告は10秒経つと×が表示される。</span>
       </section>
 
