@@ -422,6 +422,26 @@
   document.addEventListener('keydown',e=>{if(e.key==='Enter'&&state.fry.active)takeFry();else if(e.key==='ArrowUp'&&state.short.ended){e.preventDefault();swipe()}else if(e.key.toLowerCase()==='l')like();else if(e.code==='Space'&&!e.repeat){e.preventDefault();setWatch(true)}});
   document.addEventListener('keyup',e=>{if(e.code==='Space'){e.preventDefault();setWatch(false)}});
 
+
+
+  // v22: move the real gacha panel to the smartphone right column without duplicating IDs.
+  const eggDockNode=document.querySelector('.eggDock');
+  const foodRightNode=document.querySelector('#foodPanel .foodRight');
+  const fryGridNode=document.querySelector('#foodPanel .dualCookGrid.fryOnly');
+  const mobileEggHostNode=$('mobileEggHost');
+  const mobileLayoutQuery=window.matchMedia('(max-width:700px)');
+  function syncResponsiveEggPlacement(){
+    if(!eggDockNode||!foodRightNode||!mobileEggHostNode)return;
+    if(mobileLayoutQuery.matches){
+      if(eggDockNode.parentElement!==mobileEggHostNode)mobileEggHostNode.appendChild(eggDockNode);
+    }else if(eggDockNode.parentElement!==foodRightNode){
+      if(fryGridNode&&fryGridNode.parentElement===foodRightNode)foodRightNode.insertBefore(eggDockNode,fryGridNode);
+      else foodRightNode.appendChild(eggDockNode);
+    }
+  }
+  syncResponsiveEggPlacement();
+  try{mobileLayoutQuery.addEventListener('change',syncResponsiveEggPlacement)}catch(_){mobileLayoutQuery.addListener(syncResponsiveEggPlacement)}
+
   // 軽量化：ゲームロジック/UI更新は4fps。タイミング判定自体はperformance.now()で実時間判定。
   setInterval(tick,250);render();
 })();
