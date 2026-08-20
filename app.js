@@ -34,7 +34,7 @@
     task:{success:0,miss:0,combo:0,maxCombo:0,slots:Array.from({length:3},()=>({type:null,reward:15,answer:null,step:1,started:0,cooldownUntil:0,cooldownDuration:10}))},
     toast:{active:false,ready:false,start:0,duration:12},
     fry:{active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792},
-    short:{progress:0,duration:3.8,watching:false,liked:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)},
+    short:{progress:0,duration:3.8,watching:false,liked:false,likeRewarded:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)},
     eggs:{slots:[null,null,null],capacity:3,recharge:16,nextAt:0}
   };
 
@@ -317,10 +317,19 @@
 
   function nextShortVisual(){
     const s=pick(shorts);els.shortArt.textContent=s[0];els.shortTitle.textContent=s[1];els.shortTag.textContent=s[2];els.commentCount.textContent=String(rand(84,1480));
-    state.short.progress=0;state.short.liked=false;state.short.ended=false;state.short.endedAt=0;state.short.watching=false
+    state.short.progress=0;state.short.liked=false;state.short.likeRewarded=false;state.short.ended=false;state.short.endedAt=0;state.short.watching=false
   }
   function setWatch(on){if(!state.running||state.short.ad||state.short.ended)on=false;state.short.watching=on;render()}
-  function like(){if(!state.running||state.short.ad||state.short.ended)return;state.short.liked=!state.short.liked;render()}
+  function like(){
+    if(!state.running||state.short.ad)return;
+    const wasLiked=state.short.liked;
+    state.short.liked=!state.short.liked;
+    // 完走後でもいいね可能。報酬は動画1本につき一度だけ。
+    if(!wasLiked&&state.short.liked&&state.short.ended&&!state.short.likeRewarded){
+      addDopa(2);state.short.likeRewarded=true;
+    }
+    render();
+  }
   function swipe(){
     if(!state.running||state.short.ad||!state.short.ended)return;
     const quick=state.short.endedAt>0&&(now()-state.short.endedAt)<=1.6;
@@ -353,7 +362,7 @@
     state.running=true;state.startedAt=now();state.lastTick=now();state.fullness=100;state.dopamine=100;state.money=120;state.bread=1;state.energyUntil=0;state.mochiUntil=0;
     state.task={success:0,miss:0,combo:0,maxCombo:0,slots:Array.from({length:3},freshSlot)};
     state.toast={active:false,ready:false,start:0,duration:12};state.fry={active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792};
-    state.short={progress:0,duration:3.8,watching:false,liked:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)};
+    state.short={progress:0,duration:3.8,watching:false,liked:false,likeRewarded:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)};
     state.eggs={slots:[makeEgg(),makeEgg(),makeEgg()],capacity:3,recharge:16,nextAt:0};
     els.taskSuccess.textContent='0';els.taskMiss.textContent='0';els.start.classList.add('hidden');$('rulesOverlay').classList.add('hidden');els.gameOver.classList.add('hidden');els.ad.classList.add('hidden');[0,1,2].forEach(newTask);nextShortVisual();render();
   }
@@ -361,7 +370,7 @@
     state.startedAt=0;state.lastTick=0;state.fullness=100;state.dopamine=100;state.money=120;state.bread=1;state.energyUntil=0;state.mochiUntil=0;
     state.task={success:0,miss:0,combo:0,maxCombo:0,slots:Array.from({length:3},freshSlot)};
     state.toast={active:false,ready:false,start:0,duration:12};state.fry={active:false,start:0,duration:10.5,sweetA:.742,sweetB:.792};
-    state.short={progress:0,duration:3.8,watching:false,liked:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)};
+    state.short={progress:0,duration:3.8,watching:false,liked:false,likeRewarded:false,count:0,ended:false,endedAt:0,streak:0,ad:false,adProgress:0,adDuration:10,untilAd:rand(3,6)};
     state.eggs={slots:[makeEgg(),makeEgg(),makeEgg()],capacity:3,recharge:16,nextAt:0};
     els.taskSuccess.textContent='0';els.taskMiss.textContent='0';taskEls.forEach((el,i)=>{el.reward.textContent='+15円';el.prompt.textContent='ゲーム開始で仕事が来る';el.area.innerHTML='';el.cooldown.classList.add('hidden');el.cooldownFill.style.width='0%';});
     els.ad.classList.add('hidden');
@@ -384,7 +393,7 @@
       state.short.progress+=dt;addDopa(shortWatchRate()*dt);
       if(state.short.progress>=state.short.duration){
         state.short.progress=state.short.duration;state.short.ended=true;state.short.watching=false;
-        const finish=shortFinishBonus(),likeBonus=state.short.liked?2:0;addDopa(finish+likeBonus);state.short.streak=Math.min(9,state.short.streak+1);state.short.endedAt=t;
+        const finish=shortFinishBonus(),likeBonus=state.short.liked?2:0;addDopa(finish+likeBonus);if(likeBonus)state.short.likeRewarded=true;state.short.streak=Math.min(9,state.short.streak+1);state.short.endedAt=t;
         toastMsg(`完走 +${finish}${likeBonus?` / ♥ +${likeBonus}`:''}`);
       }
     }
@@ -403,8 +412,9 @@
   eggButtons.forEach((b,i)=>b.addEventListener('click',()=>tapEgg(i)));
   taskEls.forEach((e,i)=>e.cooldownText.addEventListener('click',()=>shaveCooldown(i)));
   els.like.addEventListener('click',like);els.swipe.addEventListener('click',swipe);els.adClose.addEventListener('click',closeAd);
-  ['pointerdown','touchstart'].forEach(ev=>els.watch.addEventListener(ev,e=>{e.preventDefault();setWatch(true)},{passive:false}));
-  ['pointerup','pointercancel','pointerleave','touchend','touchcancel'].forEach(ev=>els.watch.addEventListener(ev,()=>setWatch(false),{passive:true}));
+  els.watch.addEventListener('pointerdown',e=>{e.preventDefault();try{els.watch.setPointerCapture(e.pointerId)}catch(_){}setWatch(true)});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>els.watch.addEventListener(ev,()=>setWatch(false)));
+  els.watch.addEventListener('contextmenu',e=>e.preventDefault());
   document.addEventListener('visibilitychange',()=>{if(document.hidden)state.short.watching=false});
   window.addEventListener('blur',()=>{state.short.watching=false});
   document.querySelectorAll('.mobileNav button').forEach(b=>b.addEventListener('click',()=>$(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'})));
